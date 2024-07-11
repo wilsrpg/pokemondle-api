@@ -95,7 +95,7 @@ Retorna dados sobre os pokémons da partida atual.
 
 	{
 		"ids_dos_pokemons_das_geracoes_selecionadas": [int],
-		"pokemons_das_geracoes_selecionadas": [string],
+		"nomes_dos_pokemons_das_geracoes_selecionadas": [string],
 		"urls_dos_sprites_dos_pokemons_das_geracoes_selecionadas": [string]
 	}
 403: sem partida iniciada
