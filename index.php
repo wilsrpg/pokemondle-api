@@ -38,8 +38,8 @@ if (isset($subdir[0]))
   $versao = $subdir[0];
 if (isset($subdir[1]))
   $acao = $subdir[1];
-if (isset($subdir[2]))
-  $param = $subdir[2];
+//if (isset($subdir[2]))
+//  $param = $subdir[2];
 
 if (empty($versao) || empty($acao)) {
   http_response_code(404);
