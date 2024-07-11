@@ -109,8 +109,8 @@ function obter_dados($poke, $geracao) {
     //  exit;
     //}
 
-      if ($acao == 'jogo') {
-        if ($metodo == 'POST') {
+      //if ($acao == 'jogo') {
+        if ($metodo == 'POST' && $acao == 'jogo') {
         //if (isset($_SESSION['geracoes'])) {
         //  //http_response_code(400);
         //  echo json_encode(['erro' => 'Já existe um jogo em andamento. termine-o ou exclua a sessão']);
@@ -207,15 +207,16 @@ function obter_dados($poke, $geracao) {
         $_SESSION['pokemon_secreto'] = $pkscrt;
         $_SESSION['descobriu'] = false;
         $_SESSION['palpites'] = [];
+
         echo json_encode(['seed' => $seed]);
         exit;
       }
       //else
 
-      if ($metodo == 'GET') {
+      if ($metodo == 'GET' && $acao == 'jogo') {
       //if ($acao == 'jogo') {
         if (empty($_SESSION['geracoes'])) {
-          http_response_code(404);
+          http_response_code(403);
           echo json_encode(['erro' => 'Não há jogos em andamento em sua sessão.']);
           exit;
         }
@@ -224,7 +225,7 @@ function obter_dados($poke, $geracao) {
           'seed' => $_SESSION['seed'],
           'geracoes' => $_SESSION['geracoes'],
           'total_de_pokemons_das_geracoes_selecionadas' => $_SESSION['total_de_pokemons_das_geracoes_selecionadas'],
-          'numero_de_palpites' => count($_SESSION['palpites']),
+          'total_de_palpites' => count($_SESSION['palpites']),
           'descobriu' => $_SESSION['descobriu']
         ];
         //header('X-PHP-Response-Code: ?', true, ?);
@@ -232,12 +233,12 @@ function obter_dados($poke, $geracao) {
         echo json_encode($jogo);
         exit;
       }
-      }
+      //}
       //else
       
-      if ($acao == 'pokemons') {
+      if ($metodo == 'GET' && $acao == 'pokemons') {
         if (empty($_SESSION['geracoes'])) {
-          //http_response_code(400);
+          http_response_code(403);
           echo json_encode(['erro' => 'inicie uma sessão para poder jogar']);
           exit;
         }
@@ -249,25 +250,30 @@ function obter_dados($poke, $geracao) {
         exit;
       }
       //else
-      if ($acao == 'palpites') {
+      if ($metodo == 'GET' && $acao == 'palpites') {
         if (empty($_SESSION['geracoes'])) {
-          http_response_code(400);
+          http_response_code(403);
           echo json_encode(['erro' => 'inicie uma sessão para poder jogar']);
           exit;
         }
-        if ($metodo == 'GET') {
-          if (empty($param)) {
+        //if ($metodo == 'GET') {
+          //if (empty($param)) {
           //echo json_encode(['palpites' => $_SESSION['palpites']]);
           echo json_encode($_SESSION['palpites']);
           exit;
-        } else {
-          http_response_code(400);
-          echo json_encode(['erro' => 'O método GET nesta rota ']);
-          exit;
-        }
+        //} else {
+        //  http_response_code(404);
+        //  echo json_encode(['erro' => 'Rota não encontrada.']);
+        //  exit;
+        //}
       }
 
-      if ($metodo == 'POST') {
+      if ($metodo == 'POST' && $acao == 'palpites') {
+        if (empty($_SESSION['geracoes'])) {
+          http_response_code(403);
+          echo json_encode(['erro' => 'inicie uma sessão para poder jogar']);
+          exit;
+        }
         if (empty($_POST['pokemon'])) {
           http_response_code(400);
           echo json_encode(['erro' => 'Propriedade "pokemon" ausente do corpo da requisição.']);
@@ -277,12 +283,12 @@ function obter_dados($poke, $geracao) {
         //$pokemon = obter_dados($param, max($_SESSION['geracoes']));
         $pokemon = obter_dados($pk, max($_SESSION['geracoes']));
         if (empty($pokemon->id)) {
-          http_response_code(404);
+          http_response_code(400);
           echo json_encode(['erro' => 'Pokémon não encontrado']);
           exit;
         }
         if (array_search($pokemon->nome, $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas']) === false) {
-          http_response_code(400);
+          http_response_code(422);
           echo json_encode(['erro' => 'São válidos apenas pokémons das gerações selecionadas: '.implode(',', $_SESSION['geracoes'])]);
           exit;
         }
@@ -322,7 +328,7 @@ function obter_dados($poke, $geracao) {
         echo json_encode($resultado);
         exit;
       }
-      }
+      //}
       //else
       //if ($acao == 'deletar') {
       //  session_unset();
@@ -330,7 +336,7 @@ function obter_dados($poke, $geracao) {
       //  exit;
       //}
       //else
-        http_response_code(400);
+        http_response_code(404);
         echo json_encode(['erro' => 'Rota não encontrada: "' . $acao.'"']);
         exit;
       //}
@@ -364,7 +370,7 @@ function obter_dados($poke, $geracao) {
 
   }
   //else
-    http_response_code(400);
+    http_response_code(404);
     echo json_encode(['erro' => 'Versão não encontrada: "'.$versao.'"']);
     exit;
 
