@@ -102,6 +102,7 @@ function obter_dados($poke, $geracao) {
   ];
 }
 
+  if ($api == 'pokedle-api') {
   if ($versao == 'v1') {
     //if (empty($acao)) {
     //  http_response_code(400);
@@ -372,6 +373,12 @@ function obter_dados($poke, $geracao) {
   //else
     http_response_code(404);
     echo json_encode(['erro' => 'Versão não encontrada: "'.$versao.'"']);
+    exit;
+
+  }
+  //else
+    http_response_code(404);
+    echo json_encode(['erro' => 'API não encontrada: "'.$api.'"']);
     exit;
 
 //} else
