@@ -1,3 +1,6 @@
+### URL base: [https://wilsrpg.heliohost.us/pokedle-api/v1](https://wilsrpg.heliohost.us/pokedle-api/v1)
+
+
 ### POST /jogo
 
 Inicia um novo jogo. Recebe os números das gerações (de 1 a 9), como array ou string (separados por vírgula), e retorna o valor da seed usada para gerar o pokémon secreto.
