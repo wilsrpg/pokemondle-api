@@ -24,7 +24,7 @@ if ($metodo == 'POST' && empty($_POST)) {
 $caminho = '';
 if(empty($_GET['caminho'])) {
   http_response_code(404);
-  echo json_encode(['erro' => 'Rota não encontrada. Verifique se o endereço corresponde ao padrão domínio/versão/rota.']);
+  echo json_encode(['erro' => 'Rota não encontrada. Verifique se o endereço corresponde ao padrão domínio/api/versão/rota.']);
   exit;
 }
 
@@ -35,16 +35,16 @@ $subdir = explode('/', $caminho);
 $query_params = $_POST;
 
 if (isset($subdir[0]))
-  $versao = $subdir[0];
+  $api = $subdir[0];
 if (isset($subdir[1]))
-  $acao = $subdir[1];
-//if (isset($subdir[2]))
-//  $param = $subdir[2];
+  $versao = $subdir[1];
+if (isset($subdir[2]))
+  $acao = $subdir[2];
 
-if (empty($versao) || empty($acao)) {
+if (empty($api) || empty($versao) || empty($acao)) {
   http_response_code(404);
-  echo json_encode(['erro' => 'Rota não encontrada. Verifique se o endereço corresponde ao padrão domínio/versão/rota.']);
+  echo json_encode(['erro' => 'Rota não encontrada. Verifique se o endereço corresponde ao padrão domínio/api/versão/rota.']);
   exit;
 }
 
-include_once 'api/poke.php';
+include_once 'pokedle-api.php';
