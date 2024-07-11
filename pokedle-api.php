@@ -124,7 +124,7 @@ function obter_dados($poke, $geracao) {
 
         if (empty($qp_geracoes)) {
           http_response_code(400);
-          echo json_encode(['erro' => 'É preciso informar pelo menos uma geração (use o parâmetro "geracoes". Por exemplo, para selecionar as gerações 2 e 3: ?geracoes=2,3).']);
+          echo json_encode(['erro' => 'É preciso informar pelo menos uma geração.']);
           exit;
         }
         $geracoes;
