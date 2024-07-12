@@ -2,6 +2,7 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json');
 date_default_timezone_set('America/Sao_Paulo');
+ini_set('session.save_path', '/var/lib/php/session');
 if(session_status() === 1) {
   session_set_cookie_params(["SameSite" => "Strict"]);
   session_start();
