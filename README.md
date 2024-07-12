@@ -111,25 +111,27 @@ Retorna um array com todos os palpites já dados na partida atual.
 **Retorno:**
 200: operação bem sucedida
 
-	[
-		{
-			"id": int,
-			"id_c": int,
-			"nome": string,
-			"nome_c": int,
-			"tipo1": string,
-			"tipo1_c": int,
-			"tipo2": string,
-			"tipo2_c": int,
-			"cor": string,
-			"cor_c": int,
-			"evoluido": string,
-			"evoluido_c": int,
-			"altura": double,
-			"altura_c": int,
-			"peso": double,
-			"peso_c": int,
-			"url_do_sprite": string
-		}
-	]
+	{
+		"palpites": [
+			{
+				"id": int,
+				"id_c": int,
+				"nome": string,
+				"nome_c": int,
+				"tipo1": string,
+				"tipo1_c": int,
+				"tipo2": string,
+				"tipo2_c": int,
+				"cor": string,
+				"cor_c": int,
+				"evoluido": string,
+				"evoluido_c": int,
+				"altura": double,
+				"altura_c": int,
+				"peso": double,
+				"peso_c": int,
+				"url_do_sprite": string
+			}
+		]
+	}
 403: sem partida iniciada

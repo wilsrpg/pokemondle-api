@@ -265,8 +265,8 @@ function obter_dados($poke, $geracao) {
         }
         //if ($metodo == 'GET') {
           //if (empty($param)) {
-          //echo json_encode(['palpites' => $_SESSION['palpites']]);
-          echo json_encode($_SESSION['palpites']);
+          echo json_encode(['palpites' => $_SESSION['palpites']]);
+          //echo json_encode($_SESSION['palpites']);
           exit;
         //} else {
         //  http_response_code(404);
