@@ -252,9 +252,15 @@ function obter_dados($poke, $geracao) {
       }
       //else
       if ($metodo == 'GET' && $acao == 'palpites') {
+          $_SESSION['b'] = 'B';
         if (empty($_SESSION['geracoes'])) {
           http_response_code(403);
-          echo json_encode(['erro' => 'inicie uma sessão para poder jogar']);
+          $_SESSION['a'] = 'A';
+          $st = session_save_path();
+          foreach ($_SESSION as $key => $value) {
+            $st = $st.'.'.$key.', ';
+          }
+          echo json_encode(['erro' => $st]);
           exit;
         }
         //if ($metodo == 'GET') {
