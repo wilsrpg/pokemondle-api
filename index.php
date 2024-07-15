@@ -33,7 +33,7 @@ $caminho = $_GET['caminho'];
 $subdir = explode('/', $caminho);
 //$query_params = $_GET;
 //array_shift($query_params);
-$query_params = $_POST;
+$post_params = $_POST;
 
 if (isset($subdir[0]))
   $api = $subdir[0];

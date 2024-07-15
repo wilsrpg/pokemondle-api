@@ -118,24 +118,24 @@ function obter_dados($poke, $geracao) {
         //  exit;
         //}
 
-        $qp_geracoes = '';
-        if(array_key_exists('geracoes', $query_params))
-          $qp_geracoes = $query_params['geracoes'];
+        $postp_geracoes = '';
+        if(array_key_exists('geracoes', $post_params))
+          $postp_geracoes = $post_params['geracoes'];
 
         $geracao_contexto;
-        if(isset($query_params['geracao_contexto']))
-          $geracao_contexto = $query_params['geracao_contexto'];
+        if(isset($post_params['geracao_contexto']))
+          $geracao_contexto = $post_params['geracao_contexto'];
 
-        if (empty($qp_geracoes)) {
+        if (empty($postp_geracoes)) {
           http_response_code(400);
           echo json_encode(['erro' => 'É preciso informar pelo menos uma geração.']);
           exit;
         }
         $geracoes;
-        if (is_array($qp_geracoes))
-          $geracoes = $qp_geracoes;
+        if (is_array($postp_geracoes))
+          $geracoes = $postp_geracoes;
         else
-          $geracoes = explode(',', $qp_geracoes);
+          $geracoes = explode(',', $postp_geracoes);
         foreach ($geracoes as $g) {
           if (!is_numeric($g)) {
             http_response_code(400);
