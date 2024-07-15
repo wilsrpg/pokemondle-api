@@ -3,12 +3,13 @@
 
 ### POST /jogo
 
-Inicia um novo jogo. Recebe os números das gerações (de 1 a 9), como array ou string (separados por vírgula), e retorna o valor da seed usada para gerar o pokémon secreto.
+Inicia um novo jogo. Recebe os números das gerações (de 1 a 9), como array ou string (separados por vírgula), opcionalmente o número da geração do contexto do jogo como número (pra determinar tipos e evoluções; se não for especificado, o número da maior geração será usado), e retorna o valor da seed usada para gerar o pokémon secreto, ou uma string contendo a descrição do erro, caso haja.
 
 **Parâmetros:** body (object)
 
 	{
-		"geracoes": [int] ou string
+		"geracoes": [int] ou string,
+		"geracao_contexto": int (opcional)
 	}
 
 **Retorno:**
@@ -19,11 +20,15 @@ Inicia um novo jogo. Recebe os números das gerações (de 1 a 9), como array ou
 	}
 400: problema no parâmetro
 
+	{
+		"erro": string
+	}
+
 
 
 ### POST /palpites
 
-Registra um palpite. Recebe uma string com o nome do pokémon e retorna um objeto com suas informações e a classificação de cada categoria em relação ao pokémon secreto.
+Registra um palpite. Recebe uma string com o nome do pokémon e retorna um objeto com suas informações e a classificação de cada categoria em relação ao pokémon secreto, ou uma string contendo a descrição do erro, caso haja.
 0 = errou ou (em altura e peso) valor menor que o do pokémon secreto;
 1 = acertou;
 2 (nos tipos) = acertou, mas está na posição errada;
@@ -62,11 +67,15 @@ Registra um palpite. Recebe uma string com o nome do pokémon e retorna um objet
 409: pokémon já palpitado
 422: pokémon de geração não selecionada
 
+	{
+		"erro": string
+	}
+
 
 
 ### GET /jogo
 
-Retorna dados sobre a partida atual.
+Retorna dados sobre a partida atual, ou uma string contendo a descrição do erro, caso haja.
 
 **Parâmetros:** nenhum
 
@@ -82,11 +91,15 @@ Retorna dados sobre a partida atual.
 	}
 403: sem partida iniciada
 
+	{
+		"erro": string
+	}
+
 
 
 ### GET /pokemons
 
-Retorna dados sobre os pokémons da partida atual.
+Retorna dados sobre os pokémons da partida atual, ou uma string contendo a descrição do erro, caso haja.
 
 **Parâmetros:** nenhum
 
@@ -100,11 +113,15 @@ Retorna dados sobre os pokémons da partida atual.
 	}
 403: sem partida iniciada
 
+	{
+		"erro": string
+	}
+
 
 
 ### GET /palpites
 
-Retorna um array com todos os palpites já dados na partida atual.
+Retorna um array com todos os palpites já dados na partida atual, ou uma string contendo a descrição do erro, caso haja.
 
 **Parâmetros:** nenhum
 
@@ -135,3 +152,7 @@ Retorna um array com todos os palpites já dados na partida atual.
 		]
 	}
 403: sem partida iniciada
+
+	{
+		"erro": string
+	}

@@ -122,6 +122,10 @@ function obter_dados($poke, $geracao) {
         if(array_key_exists('geracoes', $query_params))
           $qp_geracoes = $query_params['geracoes'];
 
+        $geracao_contexto;
+        if(isset($query_params['geracao_contexto']))
+          $geracao_contexto = $query_params['geracao_contexto'];
+
         if (empty($qp_geracoes)) {
           http_response_code(400);
           echo json_encode(['erro' => 'É preciso informar pelo menos uma geração.']);
@@ -141,19 +145,49 @@ function obter_dados($poke, $geracao) {
           $g = $g * 1;
           if (!is_int($g)) {
             http_response_code(400);
-            echo json_encode(['erro' => 'as gerações devem conter apenas números inteiros.']);
+            echo json_encode(['erro' => 'As gerações devem conter apenas números inteiros.']);
             exit;
           }
           if ($g > 9 || $g < 1) {
             http_response_code(400);
-            echo json_encode(['erro' => 'as gerações devem ser números entre 1 e 9']);
+            echo json_encode(['erro' => 'As gerações devem ser números entre 1 e 9']);
             exit;
           }
         }
         $geracoes = array_map(function ($i) {return $i*1;}, $geracoes);
-
         sort($geracoes);
         $geracao = max($geracoes);
+
+        if (empty($geracao_contexto))
+          $geracao_contexto = $geracao;
+        else {
+          if (!is_numeric($geracao_contexto)) {
+            http_response_code(400);
+            echo json_encode(['erro' => 'A geração do contexto deve conter apenas um número inteiro.']);
+            exit;
+          }
+          $geracao_contexto = $geracao_contexto * 1;
+          if (!is_int($geracao_contexto)) {
+            http_response_code(400);
+            echo json_encode(['erro' => 'A geração do contexto deve conter apenas um número inteiro.']);
+            exit;
+          }
+          if ($geracao_contexto > 9 || $geracao_contexto < 1) {
+            http_response_code(400);
+            echo json_encode(['erro' => 'A geração do contexto deve ser um número entre 1 e 9']);
+            exit;
+          }
+          if ($geracao > $geracao_contexto) {
+            http_response_code(400);
+            echo json_encode(['erro' => 'A geração do contexto não pode ser menor que a maior geração escolhida.']);
+            exit;
+          }
+        }
+
+        //$geracao = max($geracao, $geracao_contexto);
+        $geracao = $geracao_contexto*1;
+        //if (isset($_POST['geracao_contexto']))
+        //  $geracao = (int) $_POST['geracao_contexto'];
         $numero_de_pokemons_por_geracao = [
           [0,151],
           [151,100],
@@ -201,6 +235,7 @@ function obter_dados($poke, $geracao) {
         //$_SESSION['id'] = $uuid;
         $_SESSION['seed'] = $seed;
         $_SESSION['geracoes'] = $geracoes;
+        $_SESSION['geracao_contexto'] = $geracao_contexto;
         $_SESSION['total_de_pokemons_das_geracoes_selecionadas'] = $total_de_pokemons_das_geracoes;
         $_SESSION['ids_dos_pokemons_das_geracoes_selecionadas'] = $ids_dos_pokemons_das_geracoes;
         $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas'] = $nomes_dos_pokemons_das_geracoes;
@@ -288,7 +323,7 @@ function obter_dados($poke, $geracao) {
         }
         $pk = $_POST['pokemon'];
         //$pokemon = obter_dados($param, max($_SESSION['geracoes']));
-        $pokemon = obter_dados($pk, max($_SESSION['geracoes']));
+        $pokemon = obter_dados($pk, $_SESSION['geracao_contexto']);
         if (empty($pokemon->id)) {
           http_response_code(400);
           echo json_encode(['erro' => 'Pokémon não encontrado']);
@@ -296,7 +331,7 @@ function obter_dados($poke, $geracao) {
         }
         if (array_search($pokemon->nome, $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas']) === false) {
           http_response_code(422);
-          echo json_encode(['erro' => 'São válidos apenas pokémons das gerações selecionadas: '.implode(',', $_SESSION['geracoes'])]);
+          echo json_encode(['erro' => 'São válidos apenas pokémons das gerações selecionadas. Gerações='.implode(',', $_SESSION['geracoes'])]);
           exit;
         }
         foreach ($_SESSION['palpites'] as $p)
