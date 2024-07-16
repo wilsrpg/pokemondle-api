@@ -85,6 +85,7 @@ Retorna dados sobre a partida atual, ou uma string contendo a descrição do err
 	{
 		"seed": int,
 		"geracoes": [int],
+		"geracao_contexto": int,
 		"total_de_pokemons_das_geracoes_selecionadas": int,
 		"total_de_palpites": int,
 		"descobriu": boolean

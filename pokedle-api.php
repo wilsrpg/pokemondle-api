@@ -260,6 +260,7 @@ function obter_dados($poke, $geracao) {
         $jogo = [
           'seed' => $_SESSION['seed'],
           'geracoes' => $_SESSION['geracoes'],
+          'geracao_contexto' => $_SESSION['geracao_contexto'],
           'total_de_pokemons_das_geracoes_selecionadas' => $_SESSION['total_de_pokemons_das_geracoes_selecionadas'],
           'total_de_palpites' => count($_SESSION['palpites']),
           'descobriu' => $_SESSION['descobriu']
