@@ -139,13 +139,13 @@ function obter_dados($poke, $geracao) {
         foreach ($geracoes as $g) {
           if (!is_numeric($g)) {
             http_response_code(400);
-            echo json_encode(['erro' => 'As gerações devem conter apenas números inteiros.']);
+            echo json_encode(['erro' => 'As gerações devem conter apenas números inteiros separados por vírgula.']);
             exit;
           }
           $g = $g * 1;
           if (!is_int($g)) {
             http_response_code(400);
-            echo json_encode(['erro' => 'As gerações devem conter apenas números inteiros.']);
+            echo json_encode(['erro' => 'As gerações devem conter apenas números inteiros separados por vírgula.']);
             exit;
           }
           if ($g > 9 || $g < 1) {
@@ -318,7 +318,7 @@ function obter_dados($poke, $geracao) {
         }
         if (empty($_POST['pokemon'])) {
           http_response_code(400);
-          echo json_encode(['erro' => 'Propriedade "pokemon" ausente do corpo da requisição.']);
+          echo json_encode(['erro' => 'Digite o nome do pokémon.']);
           exit;
         }
         $pk = $_POST['pokemon'];
