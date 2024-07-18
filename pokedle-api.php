@@ -317,12 +317,12 @@ function obter_dados($poke, $geracao) {
           echo json_encode(['erro' => 'inicie uma sessão para poder jogar']);
           exit;
         }
-        if (empty($_POST['pokemon'])) {
+        if (empty($post_params['pokemon'])) {
           http_response_code(400);
           echo json_encode(['erro' => 'Digite o nome do pokémon.']);
           exit;
         }
-        $pk = $_POST['pokemon'];
+        $pk = $post_params['pokemon'];
         //$pokemon = obter_dados($param, max($_SESSION['geracoes']));
         $pokemon = obter_dados($pk, $_SESSION['geracao_contexto']);
         if (empty($pokemon->id)) {

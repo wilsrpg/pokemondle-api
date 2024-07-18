@@ -2,7 +2,6 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json');
 date_default_timezone_set('America/Sao_Paulo');
-//ini_set('session.save_path', '/var/lib/php/session');
 if(session_status() === 1) {
   session_set_cookie_params(["SameSite" => "Strict"]);
   session_start();
@@ -16,9 +15,9 @@ if ($metodo != 'GET' && $metodo != 'POST') {
   echo json_encode(['erro' => 'Método não suportado.']);
   exit;
 }
-if ($metodo == 'POST' && empty($_POST)) {
+if ($metodo == 'POST' && empty($_POST) && empty(file_get_contents('php://input'))) {
   http_response_code(405);
-  echo json_encode(['erro' => 'POST vazio.']);
+  echo json_encode(['erro' => 'Nenhum dado recebido.']);
   exit;
 }
 
@@ -31,9 +30,12 @@ if(empty($_GET['caminho'])) {
 
 $caminho = $_GET['caminho'];
 $subdir = explode('/', $caminho);
-//$query_params = $_GET;
-//array_shift($query_params);
-$post_params = $_POST;
+$post_json = json_decode(file_get_contents('php://input'), true);
+$post_params;
+if (empty($_POST))
+  $post_params = $post_json;
+else
+  $post_params = $_POST;
 
 if (isset($subdir[0]))
   $api = $subdir[0];

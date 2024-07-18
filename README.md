@@ -1,5 +1,5 @@
-### URL base: [https://wilsrpg.heliohost.us/pokedle-api/v1](https://wilsrpg.heliohost.us/pokedle-api/v1)
-
+### URL base: [https://wilsrpg.x10.mx/pokedle-api/v1](https://wilsrpg.x10.mx/pokedle-api/v1)
+Todas as requisições podem ser feitas em formato JSON ou formulário HTML.
 
 ### POST /jogo
 
