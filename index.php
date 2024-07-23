@@ -50,7 +50,10 @@ if (empty($api) || empty($versao) || empty($acao)) {
   exit;
 }
 
-include_once 'pokedle-api.php';
+if ($api == 'pokedle-api')
+  include_once 'pokedle-api.php';
+if ($api == 'pokedle-moves-api')
+  include_once 'pokedle-moves-api.php';
 
 /*
 movedle:
