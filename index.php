@@ -51,3 +51,16 @@ if (empty($api) || empty($versao) || empty($acao)) {
 }
 
 include_once 'pokedle-api.php';
+
+/*
+movedle:
+tipo
+poder
+precisão
+pp
+categoria (físico, especial, suporte)
+afeta stat (category)
+causa status (ailment)
+efeito extra (category)
+geração?
+*/

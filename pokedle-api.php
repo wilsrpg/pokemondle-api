@@ -1,12 +1,19 @@
 <?php
+include_once 'nomes_estilizados_de_todos_os_pokemons.php';
 $pokeapi = new PokePHP\PokeApi;
 
-function obter_dados($poke, $geracao) {
+function obter_dados($nome_estilizado_do_pokemon, $geracao) {
   global $pokeapi;
-  $pokespecie_secreto = json_decode($pokeapi->pokemonSpecies($poke));
+  global $nomes_estilizados_de_todos_os_pokemons;
+  $id = array_search(strtolower($nome_estilizado_do_pokemon), array_map(function($n) {return strtolower($n);}, $nomes_estilizados_de_todos_os_pokemons));
+  //$pokespecie_secreto = json_decode($pokeapi->pokemonSpecies($nome_estilizado_do_pokemon));
+  //echo $id;exit;
+  $pokespecie_secreto = json_decode($pokeapi->pokemonSpecies($id));
+  //var_dump($pokespecie_secreto->id);exit;
   if (empty($pokespecie_secreto->id))
-    return ['erro' => 'Pokémon não encontrado: '.$poke.'"'];
+    return ['erro' => 'Pokémon não encontrado: '.$nome_estilizado_do_pokemon];
   $pokemon_secreto = json_decode($pokeapi->pokemon($pokespecie_secreto->id));
+  //var_dump($pokemon_secreto);exit;
   $numero_de_pokemons_por_geracao = [
     [0,151],
     [151,100],
@@ -16,53 +23,53 @@ function obter_dados($poke, $geracao) {
     [649,72],
     [721,88],
     [809,96],
-    [905,120] 
+    [905,120]
   ];
 
   $tipos = [
-  	"normal" => "normal",
-    "fighting" => "lutador",
-    "flying" => "voador",
-    "poison" => "venenoso",
-    "ground" => "terra",
-    "rock" => "pedra",
-    "bug" => "inseto",
-    "ghost" => "fantasma",
-    "steel" => "metálico",
-    "fire" => "fogo",
-    "water" => "água",
-    "grass" => "planta",
-    "electric" => "elétrico",
-    "psychic" => "psíquico",
-    "ice" => "gelo",
-    "dragon" => "dragão",
-    "dark" => "noturno",
-    "fairy" => "fada",
-    "stellar" => "estelar",
-    "unknown" => "desconhecido",
-    "nenhum" => "nenhum"
+  	"normal" => "Normal",
+    "fighting" => "Lutador",
+    "flying" => "Voador",
+    "poison" => "Venenoso",
+    "ground" => "Terra",
+    "rock" => "Pedra",
+    "bug" => "Inseto",
+    "ghost" => "Fantasma",
+    "steel" => "Metálico",
+    "fire" => "Fogo",
+    "water" => "Água",
+    "grass" => "Planta",
+    "electric" => "Elétrico",
+    "psychic" => "Psíquico",
+    "ice" => "Gelo",
+    "dragon" => "Dragão",
+    "dark" => "Noturno",
+    "fairy" => "Fada",
+    "stellar" => "Estelar",
+    "unknown" => "Desconhecido",
+    "nenhum" => "Nenhum"
   ];
   $cores = [
-    "black" => "preto",
-    "blue" => "azul",
-    "brown" => "marrom",
-    "gray" => "cinza",
-    "green" => "verde",
-    "pink" => "rosa",
-    "purple" => "roxo",
-    "red" => "vermelho",
-    "white" => "branco",
-    "yellow" => "amarelo"
+    "black" => "Preto",
+    "blue" => "Azul",
+    "brown" => "Marrom",
+    "gray" => "Cinza",
+    "green" => "Verde",
+    "pink" => "Rosa",
+    "purple" => "Roxo",
+    "red" => "Vermelho",
+    "white" => "Branco",
+    "yellow" => "Amarelo"
   ];
   
-  $nome = $pokespecie_secreto->name;
+  $nome = $nomes_estilizados_de_todos_os_pokemons[$pokespecie_secreto->id];
   $tipo1 = $pokemon_secreto->types[0]->type->name;
   $tipo2 = 'nenhum';
   if (!empty($pokemon_secreto->types[1]))
     $tipo2 = $pokemon_secreto->types[1]->type->name;
   if (!empty($pokemon_secreto->past_types)) {
     $url = $pokemon_secreto->past_types[0]->generation->url;
-    $geracao_do_tipo_anterior = str_replace('/','',substr($url,strrpos(substr($url,0,strlen($url)-1),'/')));
+    $geracao_do_tipo_anterior = str_replace('/','', substr($url, strrpos(substr($url, 0, strlen($url)-1),'/')));
     if ($geracao_do_tipo_anterior >= $geracao) {
       $tipo1 = $pokemon_secreto->past_types[0]->types[0]->type->name;
       $tipo2 = 'nenhum';
@@ -73,19 +80,20 @@ function obter_dados($poke, $geracao) {
   //$habitat = $pokespecie_secreto->habitat->name;
   $cor = $pokespecie_secreto->color->name;
   //$estagio_de_evolucao = $evolucoes->chain->species->name;
-  $evoluido = 'não';
+  $evoluido = 'Não';
   if (!empty($pokespecie_secreto->evolves_from_species)) {
     $url = $pokespecie_secreto->evolves_from_species->url;
-    //$id_da_preevolucao = str_replace('/','',substr($url,strrpos(substr($url,0,strlen($url)-1),'/')));
+    //$id_da_preevolucao = str_replace('/','', substr($url, strrpos(substr($url, 0, strlen($url)-1),'/')));
     $url = substr($url, 0, strlen($url)-1);
     $id_da_preevolucao = substr($url, strrpos($url,'/')+1);
     $id_do_ultimo = $numero_de_pokemons_por_geracao[$geracao-1][0] + $numero_de_pokemons_por_geracao[$geracao-1][1];
     if ($id_da_preevolucao <= $id_do_ultimo)
-      $evoluido = 'sim';
+      $evoluido = 'Sim';
   }
   $altura = $pokemon_secreto->height;
   $peso = $pokemon_secreto->weight;
   $url_do_sprite = $pokemon_secreto->sprites->front_default;
+  //var_dump($pokemon_secreto->id);exit;
   
   return (object) [
     'id'=>$pokemon_secreto->id*1,
@@ -181,30 +189,34 @@ if ($api == 'pokedle-api') {
         [649,72],
         [721,88],
         [809,96],
-        [905,120] 
+        [905,120]
       ];
       $G_offset = 0;
       $G_limit = 0;
       $pks = [];
       $pksps = [];
       $pokemons_da_geracao = [];
-      $pokemons_da_geracao_ = [];
 
       foreach ($geracoes as $g) {
         $G_offset = $numero_de_pokemons_por_geracao[$g-1][0];
         $G_limit = $numero_de_pokemons_por_geracao[$g-1][1];
         $G_url = 'https://pokeapi.co/api/v2/pokemon-species/?offset='.$G_offset.'&limit='.$G_limit;
         $pks = json_decode($pokeapi->sendRequest($G_url))->results;
-        $pokemons_da_geracao = array_merge($pokemons_da_geracao,$pks);
+        $pokemons_da_geracao = array_merge($pokemons_da_geracao, $pks);
       }
 
       $nomes_dos_pokemons_das_geracoes = [];
+      $nomes_url_dos_pokemons_das_geracoes = [];
+      $nomes_estilizados_dos_pokemons_das_geracoes = [];
       $ids_dos_pokemons_das_geracoes = [];
       $urls_dos_sprites = [];
       foreach ($pokemons_da_geracao as $pg) {
         $nomes_dos_pokemons_das_geracoes[] = $pg->name;
-        $id = (int) str_replace('/','',substr($pg->url,strrpos(substr($pg->url,0,strlen($pg->url)-1),'/')));
+        $nomes_url_dos_pokemons_das_geracoes[] = $pg->name;
+        $id = (int) str_replace('/','', substr($pg->url, strrpos(substr($pg->url, 0, strlen($pg->url)-1),'/')));
         $ids_dos_pokemons_das_geracoes[] = $id;
+        //$nomes_dos_pokemons_das_geracoes[] = $nomes_de_todos_os_pokemons[array_search($pg->name, $nomes_de_todos_os_pokemons)];
+        $nomes_estilizados_dos_pokemons_das_geracoes[] = $nomes_estilizados_de_todos_os_pokemons[$id];
         $urls_dos_sprites[] = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'.$id.'.png';
       }
 
@@ -214,7 +226,7 @@ if ($api == 'pokedle-api') {
       $indice_do_pokemon_secreto = (rand() % $total_de_pokemons_das_geracoes);
       $id_do_pokemon_secreto = $ids_dos_pokemons_das_geracoes[$indice_do_pokemon_secreto];
 
-      $pkscrt = obter_dados($id_do_pokemon_secreto, $geracao);
+      $pkscrt = obter_dados($nomes_estilizados_de_todos_os_pokemons[$id_do_pokemon_secreto], $geracao);
       //$uuid = uuid_create(UUID_TYPE_TIME);
       //$_SESSION['id'] = $uuid;
       $_SESSION['seed'] = $seed;
@@ -222,7 +234,10 @@ if ($api == 'pokedle-api') {
       $_SESSION['geracao_contexto'] = $geracao_contexto;
       $_SESSION['total_de_pokemons_das_geracoes_selecionadas'] = $total_de_pokemons_das_geracoes;
       $_SESSION['ids_dos_pokemons_das_geracoes_selecionadas'] = $ids_dos_pokemons_das_geracoes;
-      $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas'] = $nomes_dos_pokemons_das_geracoes;
+      //$_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas'] = $nomes_dos_pokemons_das_geracoes;
+      $_SESSION['nomes_url_dos_pokemons_das_geracoes_selecionadas'] = $nomes_url_dos_pokemons_das_geracoes;
+      $_SESSION['nomes_estilizados_dos_pokemons_das_geracoes_selecionadas'] = $nomes_estilizados_dos_pokemons_das_geracoes;
+      $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas'] = $nomes_estilizados_dos_pokemons_das_geracoes;
       $_SESSION['urls_dos_sprites_dos_pokemons_das_geracoes_selecionadas'] = $urls_dos_sprites;
       $_SESSION['pokemon_secreto'] = $pkscrt;
       $_SESSION['descobriu'] = false;
@@ -258,7 +273,10 @@ if ($api == 'pokedle-api') {
       }
       echo json_encode([
         "ids_dos_pokemons_das_geracoes_selecionadas" => $_SESSION['ids_dos_pokemons_das_geracoes_selecionadas'],
-        "nomes_dos_pokemons_das_geracoes_selecionadas" => $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas'],
+        //"nomes_dos_pokemons_das_geracoes_selecionadas" => $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas'],
+        "nomes_url_dos_pokemons_das_geracoes_selecionadas" => $_SESSION['nomes_url_dos_pokemons_das_geracoes_selecionadas'],
+        "nomes_estilizados_dos_pokemons_das_geracoes_selecionadas" => $_SESSION['nomes_estilizados_dos_pokemons_das_geracoes_selecionadas'],
+        "nomes_dos_pokemons_das_geracoes_selecionadas" => $_SESSION['nomes_estilizados_dos_pokemons_das_geracoes_selecionadas'],
         "urls_dos_sprites_dos_pokemons_das_geracoes_selecionadas" => $_SESSION['urls_dos_sprites_dos_pokemons_das_geracoes_selecionadas']
       ]);
       exit;
@@ -292,19 +310,24 @@ if ($api == 'pokedle-api') {
         echo json_encode(['erro' => 'Pokémon não encontrado']);
         exit;
       }
-      if (array_search($pokemon->nome, $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas']) === false) {
+      //if (array_search($pokemon->nome, $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas']) === false) {
+      //if (array_search($pokemon->nome, $_SESSION['nomes_estilizados_dos_pokemons_das_geracoes_selecionadas']) === false) {
+      if (array_search(strtolower($pokemon->nome), array_map(function($n) {return strtolower($n);}, $_SESSION['nomes_estilizados_dos_pokemons_das_geracoes_selecionadas'])) === false) {
         http_response_code(422);
         echo json_encode(['erro' => 'São válidos apenas pokémons das gerações selecionadas. Gerações='.implode(',', $_SESSION['geracoes'])]);
         exit;
       }
       foreach ($_SESSION['palpites'] as $p)
         if ($pokemon->nome == $p['nome']) {
-        http_response_code(409);
-        echo json_encode(['erro' => 'Este pokémon já foi palpitado']);
-        exit;
-      }
-
+          http_response_code(409);
+          echo json_encode(['erro' => 'Este pokémon já foi palpitado.']);
+          exit;
+        }
+        
+      //var_dump($_SESSION['pokemon_secreto']);exit;
+      //var_dump($pokemon);exit;
       $pkscrt = (object) $_SESSION['pokemon_secreto'];
+      //var_dump($pkscrt);exit;
       $resultado = 
       [
         'id'=>$pokemon->id,
