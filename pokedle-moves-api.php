@@ -69,6 +69,7 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
   if ($precisao === null) $precisao = '--';
   $pp = $tecnica_secreta->pp;
   $categoria = $categorias[$tecnica_secreta->damage_class->name];
+  $ailment = $tecnica_secreta->meta->ailment->name;
   $causa_ailment = $ailment == 'paralysis' || $ailment == 'sleep' || $ailment == 'freeze' || $ailment == 'burn' || $ailment == 'poison' || $tecnica_secreta->name == 'tri-attack' ? 'Sim' : 'Não';
   $afeta_stat = $tecnica_secreta->stat_changes ? 'Sim' : 'Não';
   $cura_usuario = $tecnica_secreta->meta->drain > 0 || $tecnica_secreta->meta->healing > 0 ? 'Sim' : 'Não';
@@ -89,9 +90,9 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
   
   $url_da_geracao = $tecnica_secreta->generation->url;
   //$id_da_preevolucao = str_replace('/','', substr($url_da_geracao, strrpos(substr($url_da_geracao, 0, strlen($url_da_geracao)-1),'/')));
-  $url_da_geracao = substr($url_da_geracao, 0, strlen($url_da_geracao)-1);
-  $id_da_preevolucao = substr($url_da_geracao, strrpos($url_da_geracao,'/')+1);
-  $geracao_da_tecnica = $tecnica_secreta->sprites->front_default;
+  //$url_da_geracao = substr($url_da_geracao, 0, strlen($url_da_geracao)-1);
+  //$id_da_preevolucao = substr($url_da_geracao, strrpos($url_da_geracao,'/')+1);
+  //$geracao_da_tecnica = $tecnica_secreta->sprites->front_default;
   //var_dump($tecnica_secreta->id);exit;
   
   return (object) [
@@ -233,7 +234,12 @@ if ($api == 'pokedle-moves-api') {
       $_SESSION['descobriu'] = false;
       $_SESSION['palpites'] = [];
 
-      echo json_encode(['seed' => $seed]);
+      echo json_encode([
+        'seed' => $seed,
+        'jogo' => 'pokedle-moves',
+        'geracoes' => $geracoes,
+        'geracao_contexto' => $geracao_contexto
+      ]);
       exit;
     }
 
@@ -264,7 +270,7 @@ if ($api == 'pokedle-moves-api') {
       echo json_encode([
         "ids_das_tecnicas_das_geracoes_selecionadas" => $_SESSION['ids_das_tecnicas_das_geracoes_selecionadas'],
         "nomes_url_das_tecnicas_das_geracoes_selecionadas" => $_SESSION['nomes_url_das_tecnicas_das_geracoes_selecionadas'],
-        "nomes_das_tecnicas_das_geracoes_selecionadas" => $_SESSION['nomes_estilizados_das_tecnicas_das_geracoes_selecionadas'],
+        "nomes_das_tecnicas_das_geracoes_selecionadas" => $_SESSION['nomes_das_tecnicas_das_geracoes_selecionadas'],
       ]);
       exit;
     }
@@ -285,19 +291,19 @@ if ($api == 'pokedle-moves-api') {
         echo json_encode(['erro' => 'Inicie uma sessão para poder jogar.']);
         exit;
       }
-      if (empty($post_params['tecnica'])) {
+      if (empty($post_params['palpite'])) {
         http_response_code(400);
         echo json_encode(['erro' => 'Digite o nome da técnica.']);
         exit;
       }
-      $tec = $post_params['tecnica'];
+      $tec = $post_params['palpite'];
       $tecnica = obter_dados($tec, $_SESSION['geracao_contexto']);
       if (empty($tecnica->id)) {
         http_response_code(400);
         echo json_encode(['erro' => 'Técnica não encontrada']);
         exit;
       }
-      if (array_search(strtolower($tecnica->nome), array_map(function($n) {return strtolower($n);}, $_SESSION['nomes_estilizados_das_tecnicas_das_geracoes_selecionadas'])) === false) {
+      if (array_search(strtolower($tecnica->nome), array_map(function($n) {return strtolower($n);}, $_SESSION['nomes_das_tecnicas_das_geracoes_selecionadas'])) === false) {
         http_response_code(422);
         echo json_encode(['erro' => 'São válidas apenas técnicas das gerações selecionadas. Gerações='.implode(',', $_SESSION['geracoes'])]);
         exit;
@@ -314,27 +320,27 @@ if ($api == 'pokedle-moves-api') {
       $resultado = 
       [
         'id'=>$tecnica->id,
-        'id_c'=>$tecnica->id === $tecscrt->id ? 1 : 0,
+        'id_r'=>$tecnica->id === $tecscrt->id ? 1 : 0,
         'nome'=>$tecnica->nome,
-        'nome_c'=>$tecnica->nome === $tecscrt->nome ? 1 : 0,
+        'nome_r'=>$tecnica->nome === $tecscrt->nome ? 1 : 0,
         'tipo'=>$tecnica->tipo,
-        'tipo_c'=>$tecnica->tipo === $tecscrt->tipo ? 1 : 0,
-        'poder'=>$poder,
-        'poder_c'=>$tecnica->poder === $tecscrt->poder ? 1 : ($tecnica->poder > $tecscrt->poder ? 2 : 0),
-        'precisao'=>$precisao,
-        'precisao_c'=>$tecnica->precisao === $tecscrt->precisao ? 1 : ($tecnica->precisao > $tecscrt->precisao ? 2 : 0),
-        'pp'=>$pp,
-        'pp_c'=>$tecnica->pp === $tecscrt->pp ? 1 : ($tecnica->pp > $tecscrt->pp ? 2 : 0),
-        'categoria'=>$categoria,
-        'categoria_c'=>$tecnica->categoria === $tecscrt->categoria ? 1 : 0,
-        'afeta_stat'=>$afeta_stat,
-        'afeta_stat_c'=>$tecnica->afeta_stat === $tecscrt->afeta_stat ? 1 : 0,
-        'causa_ailment'=>$causa_ailment,
-        'causa_ailment_c'=>$tecnica->causa_ailment === $tecscrt->causa_ailment ? 1 : 0,
-        'cura_usuario'=>$cura_usuario,
-        'cura_usuario_c'=>$tecnica->cura_usuario === $tecscrt->cura_usuario ? 1 : 0,
-        'efeito_unico'=>$efeito_unico,
-        'efeito_unico_c'=>$tecnica->efeito_unico === $tecscrt->efeito_unico ? 1 : 0
+        'tipo_r'=>$tecnica->tipo === $tecscrt->tipo ? 1 : 0,
+        'poder'=>$tecnica->poder,
+        'poder_r'=>$tecnica->poder === $tecscrt->poder ? 1 : ($tecnica->poder == '--' || $tecscrt->poder == '--' ? -1 : ($tecnica->poder > $tecscrt->poder ? 2 : 0)),
+        'precisao'=>$tecnica->precisao,
+        'precisao_r'=>$tecnica->precisao === $tecscrt->precisao ? 1 : ($tecnica->precisao == '--' || $tecscrt->precisao == '--' ? -1 : ($tecnica->precisao > $tecscrt->precisao ? 2 : 0)),
+        'pp'=>$tecnica->pp,
+        'pp_r'=>$tecnica->pp === $tecscrt->pp ? 1 : ($tecnica->pp > $tecscrt->pp ? 2 : 0),
+        'categoria'=>$tecnica->categoria,
+        'categoria_r'=>$tecnica->categoria === $tecscrt->categoria ? 1 : 0,
+        'afeta_stat'=>$tecnica->afeta_stat,
+        'afeta_stat_r'=>$tecnica->afeta_stat === $tecscrt->afeta_stat ? 1 : 0,
+        'causa_ailment'=>$tecnica->causa_ailment,
+        'causa_ailment_r'=>$tecnica->causa_ailment === $tecscrt->causa_ailment ? 1 : 0,
+        'cura_usuario'=>$tecnica->cura_usuario,
+        'cura_usuario_r'=>$tecnica->cura_usuario === $tecscrt->cura_usuario ? 1 : 0,
+        'efeito_unico'=>$tecnica->efeito_unico,
+        'efeito_unico_r'=>$tecnica->efeito_unico === $tecscrt->efeito_unico ? 1 : 0
       ];
       $_SESSION['palpites'][] = $resultado;
       if ($tecnica->id == $tecscrt->id)
