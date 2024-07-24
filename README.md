@@ -16,7 +16,10 @@ Inicia um novo jogo. Recebe os números das gerações (de 1 a 9), como array ou
 200: operação bem sucedida
 
 	{
-		"seed": int
+		"seed": int,
+		"jogo": string,
+		"geracoes": [int],
+		"geracao_contexto": int
 	}
 400: problema no parâmetro
 
@@ -37,7 +40,7 @@ Registra um palpite. Recebe uma string com o nome do pokémon e retorna um objet
 **Parâmetros:** body (object)
 
 	{
-		"pokemon": string
+		"palpite": string
 	}
 
 **Retorno:**
@@ -45,21 +48,21 @@ Registra um palpite. Recebe uma string com o nome do pokémon e retorna um objet
 
 	{
 		"id": int,
-		"id_c": int,
+		"id_r": int,
 		"nome": string,
-		"nome_c": int,
+		"nome_r": int,
 		"tipo1": string,
-		"tipo1_c": int,
+		"tipo1_r": int,
 		"tipo2": string,
-		"tipo2_c": int,
+		"tipo2_r": int,
 		"cor": string,
-		"cor_c": int,
+		"cor_r": int,
 		"evoluido": string,
-		"evoluido_c": int,
+		"evoluido_r": int,
 		"altura": int,
-		"altura_c": int,
+		"altura_r": int,
 		"peso": int,
-		"peso_c": int,
+		"peso_r": int,
 		"url_do_sprite": string
 	}
 400: problema no parâmetro

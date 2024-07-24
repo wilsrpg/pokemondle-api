@@ -243,7 +243,12 @@ if ($api == 'pokedle-api') {
       $_SESSION['descobriu'] = false;
       $_SESSION['palpites'] = [];
 
-      echo json_encode(['seed' => $seed]);
+      echo json_encode([
+        'seed' => $seed,
+        'jogo' => 'pokedle',
+        'geracoes' => $geracoes,
+        'geracao_contexto' => $geracao_contexto
+      ]);
       exit;
     }
 
@@ -298,12 +303,12 @@ if ($api == 'pokedle-api') {
         echo json_encode(['erro' => 'Inicie uma sessão para poder jogar.']);
         exit;
       }
-      if (empty($post_params['pokemon'])) {
+      if (empty($post_params['palpite'])) {
         http_response_code(400);
         echo json_encode(['erro' => 'Digite o nome do pokémon.']);
         exit;
       }
-      $pk = $post_params['pokemon'];
+      $pk = $post_params['palpite'];
       $pokemon = obter_dados($pk, $_SESSION['geracao_contexto']);
       if (empty($pokemon->id)) {
         http_response_code(400);
@@ -331,23 +336,23 @@ if ($api == 'pokedle-api') {
       $resultado = 
       [
         'id'=>$pokemon->id,
-        'id_c'=>$pokemon->id === $pkscrt->id ? 1 : 0,
+        'id_r'=>$pokemon->id === $pkscrt->id ? 1 : 0,
         'nome'=>$pokemon->nome,
-        'nome_c'=>$pokemon->nome === $pkscrt->nome ? 1 : 0,
+        'nome_r'=>$pokemon->nome === $pkscrt->nome ? 1 : 0,
         'tipo1'=>$pokemon->tipo1,
-        'tipo1_c'=>($pokemon->tipo1 === $pkscrt->tipo1 ? 1 : ($pokemon->tipo1 === $pkscrt->tipo2 ? 2 : 0)),
+        'tipo1_r'=>($pokemon->tipo1 === $pkscrt->tipo1 ? 1 : ($pokemon->tipo1 === $pkscrt->tipo2 ? 2 : 0)),
         'tipo2'=>$pokemon->tipo2,
-        'tipo2_c'=>$pokemon->tipo2 === $pkscrt->tipo2 ? 1 : ($pokemon->tipo2 === $pkscrt->tipo1 ? 2 : 0),
+        'tipo2_r'=>$pokemon->tipo2 === $pkscrt->tipo2 ? 1 : ($pokemon->tipo2 === $pkscrt->tipo1 ? 2 : 0),
         //'habitat'=>$pokemon->habitat,
-        //'habitat_c'=>$pokemon->habitat === $pkscrt->habitat ? 1 : 0,
+        //'habitat_r'=>$pokemon->habitat === $pkscrt->habitat ? 1 : 0,
         'cor'=>$pokemon->cor,
-        'cor_c'=>$pokemon->cor === $pkscrt->cor ? 1 : 0,
+        'cor_r'=>$pokemon->cor === $pkscrt->cor ? 1 : 0,
         'evoluido'=>$pokemon->evoluido,
-        'evoluido_c'=>$pokemon->evoluido === $pkscrt->evoluido ? 1 : 0,
+        'evoluido_r'=>$pokemon->evoluido === $pkscrt->evoluido ? 1 : 0,
         'altura'=>$pokemon->altura,
-        'altura_c'=>$pokemon->altura === $pkscrt->altura ? 1 : ($pokemon->altura > $pkscrt->altura ? 2 : 0),
+        'altura_r'=>$pokemon->altura === $pkscrt->altura ? 1 : ($pokemon->altura > $pkscrt->altura ? 2 : 0),
         'peso'=>$pokemon->peso,
-        'peso_c'=>$pokemon->peso === $pkscrt->peso ? 1 : ($pokemon->peso > $pkscrt->peso ? 2 : 0),
+        'peso_r'=>$pokemon->peso === $pkscrt->peso ? 1 : ($pokemon->peso > $pkscrt->peso ? 2 : 0),
         'url_do_sprite'=>$pokemon->url_do_sprite
       ];
       $_SESSION['palpites'][] = $resultado;
