@@ -26,7 +26,7 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
   ];
 
   $tipos = [
-  	"normal" => "Normal",
+    "normal" => "Normal",
     "fighting" => "Lutador",
     "flying" => "Voador",
     "poison" => "Venenoso",
@@ -45,32 +45,56 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
     "dark" => "Noturno",
     "fairy" => "Fada",
     "stellar" => "Estelar",
-    "unknown" => "Desconhecido",
+    "unknown" => "???",
     "nenhum" => "Nenhum"
   ];
   $categorias = [
     "physical" => "Física",
     "special" => "Especial",
-    "status" => "Suporte"
+    "status" => "Status"
   ];
-  
+  $geracao_dos_jogos = [
+    "red-blue" => 1,
+    "yellow" => 1,
+    "gold-silver" => 2,
+    "crystal" => 2,
+    "ruby-sapphire" => 3,
+    "emerald" => 3,
+    "firered-leafgreen" => 3,
+    "diamond-pearl" => 4,
+    "platinum" => 4,
+    "heartgold-soulsilver" => 4,
+    "black-white" => 5,
+    "colosseum" => 3,
+    "xd" => 3,
+    "black-2-white-2" => 5,
+    "x-y" => 6,
+    "omega-ruby-alpha-sapphire" => 6,
+    "sun-moon" => 7,
+    "ultra-sun-ultra-moon" => 7,
+    "lets-go-pikachu-lets-go-eevee" => 7,
+    "sword-shield" => 8,
+    "the-isle-of-armor" => 8,
+    "the-crown-tundra" => 8,
+    "brilliant-diamond-and-shining-pearl" => 8,
+    "legends-arceus" => 8,
+    "scarlet-violet" => 9,
+    "the-teal-mask" => 9,
+    "the-indigo-disk" => 9 
+  ];
+
   $nome = $nomes_estilizados_de_todas_as_tecnicas[$tecnica_secreta->id];
   $tipo = $tipos[$tecnica_secreta->type->name];
-  //if (!empty($tecnica_secreta->past_types)) {
-  //  $url = $tecnica_secreta->past_types[0]->generation->url;
-  //  $geracao_do_tipo_anterior = str_replace('/','', substr($url, strrpos(substr($url, 0, strlen($url)-1),'/')));
-  //  if ($geracao_do_tipo_anterior >= $geracao) {
-  //    $tipo = $tecnica_secreta->past_types[0]->types[0]->type->name;
-  //  }
-  //}
   $poder = $tecnica_secreta->power;
-  if ($poder === null) $poder = '--';
+  if ($poder === null)
+    $poder = '--';
   $precisao = $tecnica_secreta->accuracy;
-  if ($precisao === null) $precisao = '--';
+  if ($precisao === null)
+    $precisao = '--';
   $pp = $tecnica_secreta->pp;
   $categoria = $categorias[$tecnica_secreta->damage_class->name];
   $ailment = $tecnica_secreta->meta->ailment->name;
-  $causa_ailment = $ailment == 'paralysis' || $ailment == 'sleep' || $ailment == 'freeze' || $ailment == 'burn' || $ailment == 'poison' || $tecnica_secreta->name == 'tri-attack' ? 'Sim' : 'Não';
+  $causa_ailment = $ailment == 'paralysis' || $ailment == 'sleep' || $ailment == 'freeze' || $ailment == 'burn' || $ailment == 'poison' ? 'Sim' : 'Não';
   $afeta_stat = $tecnica_secreta->stat_changes ? 'Sim' : 'Não';
   $cura_usuario = $tecnica_secreta->meta->drain > 0 || $tecnica_secreta->meta->healing > 0 ? 'Sim' : 'Não';
   //$estagio_de_evolucao = $evolucoes->chain->species->name;
@@ -87,8 +111,55 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
   //  if ($id_da_preevolucao <= $id_do_ultimo)
   //    $evoluido = 'Sim';
   //}
+  $quantos_podem_aprender = 0;
+  if ($tecnica_secreta->learned_by_pokemon)
+    $quantos_podem_aprender = count($tecnica_secreta->learned_by_pokemon);
   
-  $url_da_geracao = $tecnica_secreta->generation->url;
+  if (!empty($tecnica_secreta->past_values)) {
+    for ($i=0; $i < count($tecnica_secreta->past_values); $i++) { 
+      $pv = $tecnica_secreta->past_values[$i];
+      $geracao_pv = $geracao_dos_jogos[$pv->version_group->name];
+      if ($geracao < $geracao_pv) {
+        if ($pv->type)
+          $tipo = $tipos[$pv->type->name];
+        if ($pv->power !== null)
+          $poder = $pv->power;
+        if ($pv->accuracy !== null)
+          $precisao = $pv->accuracy;
+        if ($pv->pp !== null)
+          $pp = $pv->pp;
+        break;
+      }
+    }
+  }
+
+  //correções na pokeapi (de acordo com a bulbapedia)
+  if ($tecnica_secreta->name == 'bide' && ($geracao == 2 || $geracao == 3))
+    $precisao = 100;
+  if (($tecnica_secreta->name == 'mimic' || $tecnica_secreta->name == 'pain-split') && $geracao <= 2)
+    $precisao = 100;
+  if (($tecnica_secreta->name == 'fore-sight' || $tecnica_secreta->name == 'lock-on' || $tecnica_secreta->name == 'mind-reader'
+    || $tecnica_secreta->name == 'odor-sleuth' || $tecnica_secreta->name == 'struggle') && $geracao <= 3)
+    $precisao = 100;
+  if (($tecnica_secreta->name == 'memento' || $tecnica_secreta->name == 'nightmare') && $geracao <= 3)
+    $precisao = '--';
+  if (($tecnica_secreta->name == 'roar' || $tecnica_secreta->name == 'whirlwind') && $geracao <= 5)
+    $precisao = 100;
+  if ($tecnica_secreta->name == 'topsy-turvy' && $geracao <= 6)
+    $precisao = 100;
+
+  if ($geracao <= 3 && ($tecnica_secreta->name == 'weather-ball' || $tecnica_secreta->name == 'hidden-power'))
+    $categoria = 'Varia';
+  
+  if ($tecnica_secreta->name == 'volt-tackle' && $geracao <= 3)
+    $causa_ailment = 'Não';
+  if ($tecnica_secreta->name == 'tri-attack' && $geracao >= 2)
+    $causa_ailment = 'Sim';
+
+  if ($tecnica_secreta->name == 'rapid-spin' && $geracao <= 7)
+    $afeta_stat = 'Não';
+  
+  //$url_da_geracao = $tecnica_secreta->generation->url;
   //$id_da_preevolucao = str_replace('/','', substr($url_da_geracao, strrpos(substr($url_da_geracao, 0, strlen($url_da_geracao)-1),'/')));
   //$url_da_geracao = substr($url_da_geracao, 0, strlen($url_da_geracao)-1);
   //$id_da_preevolucao = substr($url_da_geracao, strrpos($url_da_geracao,'/')+1);
@@ -106,7 +177,8 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
     'afeta_stat'=>$afeta_stat,
     'causa_ailment'=>$causa_ailment,
     'cura_usuario'=>$cura_usuario,
-    'efeito_unico'=>$efeito_unico
+    'efeito_unico'=>$efeito_unico,
+    'quantos_podem_aprender'=>$quantos_podem_aprender
   ];
 }
 
@@ -340,7 +412,10 @@ if ($api == 'pokedle-moves-api') {
         'cura_usuario'=>$tecnica->cura_usuario,
         'cura_usuario_r'=>$tecnica->cura_usuario === $tecscrt->cura_usuario ? 1 : 0,
         'efeito_unico'=>$tecnica->efeito_unico,
-        'efeito_unico_r'=>$tecnica->efeito_unico === $tecscrt->efeito_unico ? 1 : 0
+        'efeito_unico_r'=>$tecnica->efeito_unico === $tecscrt->efeito_unico ? 1 : 0,
+        'quantos_podem_aprender'=>$tecnica->quantos_podem_aprender,
+        'quantos_podem_aprender_r'=>$tecnica->quantos_podem_aprender === $tecscrt->quantos_podem_aprender ? 1
+          : ($tecnica->quantos_podem_aprender > $tecscrt->quantos_podem_aprender ? 2 : 0)
       ];
       $_SESSION['palpites'][] = $resultado;
       if ($tecnica->id == $tecscrt->id)
