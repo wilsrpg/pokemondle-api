@@ -54,16 +54,3 @@ if ($api == 'pokedle-api')
   include_once 'pokedle-api.php';
 if ($api == 'pokedle-moves-api')
   include_once 'pokedle-moves-api.php';
-
-/*
-movedle:
-tipo
-poder
-precisão
-pp
-categoria (físico, especial, suporte)
-afeta stat (category)
-causa status (ailment)
-efeito extra (category)
-geração?
-*/
