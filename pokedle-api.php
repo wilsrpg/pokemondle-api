@@ -245,7 +245,7 @@ if ($api == 'pokedle-api') {
 
       echo json_encode([
         'seed' => $seed,
-        'jogo' => 'pokedle',
+        'modo' => 'pokemon',
         'geracoes' => $geracoes,
         'geracao_contexto' => $geracao_contexto
       ]);
@@ -260,6 +260,7 @@ if ($api == 'pokedle-api') {
       }
       $jogo = [
         'seed' => $_SESSION['seed'],
+        'modo' => 'pokemon',
         'geracoes' => $_SESSION['geracoes'],
         'geracao_contexto' => $_SESSION['geracao_contexto'],
         'total_de_pokemons_das_geracoes_selecionadas' => $_SESSION['total_de_pokemons_das_geracoes_selecionadas'],

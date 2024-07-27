@@ -308,7 +308,7 @@ if ($api == 'pokedle-moves-api') {
 
       echo json_encode([
         'seed' => $seed,
-        'jogo' => 'pokedle-moves',
+        'modo' => 'tecnica',
         'geracoes' => $geracoes,
         'geracao_contexto' => $geracao_contexto
       ]);
@@ -323,6 +323,7 @@ if ($api == 'pokedle-moves-api') {
       }
       $jogo = [
         'seed' => $_SESSION['seed'],
+        'modo' => 'tecnica',
         'geracoes' => $_SESSION['geracoes'],
         'geracao_contexto' => $_SESSION['geracao_contexto'],
         'total_de_tecnicas_das_geracoes_selecionadas' => $_SESSION['total_de_tecnicas_das_geracoes_selecionadas'],
