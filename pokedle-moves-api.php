@@ -114,7 +114,33 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
   $quantos_podem_aprender = 0;
   if ($tecnica_secreta->learned_by_pokemon)
     $quantos_podem_aprender = count($tecnica_secreta->learned_by_pokemon);
-  
+
+  $descricao = 'Descrição não encontrada';
+  if ($tecnica_secreta->effect_entries[0])
+    $descricao = $tecnica_secreta->effect_entries[0]->short_effect;
+
+  $alvos = [
+    "specific-move" => 'Contra-ataque',
+    "selected-pokemon-me-first" => 'Oponente',
+    "ally" => 'Aliado',
+    "users-field" => 'Campo do aliado',
+    "user-or-ally" => 'Si mesmo ou aliado',
+    "opponents-field" => 'Campo do oponente',
+    "user" => 'Si mesmo',
+    "random-opponent" => 'Oponente aleatório',
+    "all-other-pokemon" => 'Todos os outros',
+    "selected-pokemon" => 'Oponente',
+    "all-opponents" => 'Todos os oponentes',
+    "entire-field" => 'Campo inteiro',
+    "user-and-allies" => 'Si mesmo e aliados',
+    "all-pokemon" => 'Todos',
+    "all-allies" => 'Todos os aliados',
+    "fainting-pokemon" => 'Aliado desmaiado'
+  ];
+  $alvo = $alvos[$tecnica_secreta->target->name];
+  if ($tecnica_secreta->name == 'curse')
+    $alvo = 'Oponente/Si mesmo';
+
   if (!empty($tecnica_secreta->past_values)) {
     for ($i=0; $i < count($tecnica_secreta->past_values); $i++) { 
       $pv = $tecnica_secreta->past_values[$i];
@@ -178,7 +204,9 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
     'causa_ailment'=>$causa_ailment,
     'cura_usuario'=>$cura_usuario,
     'efeito_unico'=>$efeito_unico,
-    'quantos_podem_aprender'=>$quantos_podem_aprender
+    'quantos_podem_aprender'=>$quantos_podem_aprender,
+    'alvo' => $alvo,
+    'descricao' => $descricao
   ];
 }
 
@@ -295,6 +323,9 @@ if ($api == 'pokedle-moves-api') {
       $tecscrt = obter_dados($nomes_estilizados_de_todas_as_tecnicas[$id_da_tecnica_secreta], $geracao);
       //$uuid = uuid_create(UUID_TYPE_TIME);
       //$_SESSION['id'] = $uuid;
+      
+      $dicas = [$tecscrt->descricao, $tecscrt->alvo];
+
       $_SESSION['seed'] = $seed;
       $_SESSION['geracoes'] = $geracoes;
       $_SESSION['geracao_contexto'] = $geracao_contexto;
@@ -310,7 +341,8 @@ if ($api == 'pokedle-moves-api') {
         'seed' => $seed,
         'modo' => 'tecnica',
         'geracoes' => $geracoes,
-        'geracao_contexto' => $geracao_contexto
+        'geracao_contexto' => $geracao_contexto,
+        'dicas' => $dicas
       ]);
       exit;
     }

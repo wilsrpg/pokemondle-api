@@ -94,7 +94,21 @@ function obter_dados($nome_estilizado_do_pokemon, $geracao) {
   $peso = $pokemon_secreto->weight;
   $url_do_sprite = $pokemon_secreto->sprites->front_default;
   //var_dump($pokemon_secreto->id);exit;
+  $cry;
+  if ($geracao >= 6)
+    $cry = $pokemon_secreto->cries->latest;
+  else
+    $cry = $pokemon_secreto->cries->legacy;
+  $nome_url_da_ability = $pokemon_secreto->abilities[0]->ability->name;
+  //$url_da_ability = $pokemon_secreto->abilities[0]->ability->url;
   
+  $dados_da_ability = json_decode($pokeapi->ability($nome_url_da_ability));
+  //var_dump($dados_da_ability);exit;
+  if (empty($dados_da_ability) || empty($dados_da_ability->names[7]->name))
+    return ['erro' => 'Erro ao obter ability.'];
+  $ability = $dados_da_ability->names[7]->name;
+  //past_ability??
+
   return (object) [
     'id'=>$pokemon_secreto->id*1,
     'nome'=>$nome,
@@ -106,7 +120,9 @@ function obter_dados($nome_estilizado_do_pokemon, $geracao) {
     'evoluido'=>$evoluido,
     'altura'=>$altura/10,
     'peso'=>$peso/10,
-    'url_do_sprite'=>$url_do_sprite
+    'url_do_sprite'=>$url_do_sprite,
+    'cry'=>$cry,
+    'ability'=>$ability
   ];
 }
 
@@ -229,6 +245,9 @@ if ($api == 'pokedle-api') {
       $pkscrt = obter_dados($nomes_estilizados_de_todos_os_pokemons[$id_do_pokemon_secreto], $geracao);
       //$uuid = uuid_create(UUID_TYPE_TIME);
       //$_SESSION['id'] = $uuid;
+
+      $dicas = [$pkscrt->cry, $pkscrt->ability];
+
       $_SESSION['seed'] = $seed;
       $_SESSION['geracoes'] = $geracoes;
       $_SESSION['geracao_contexto'] = $geracao_contexto;
@@ -247,7 +266,8 @@ if ($api == 'pokedle-api') {
         'seed' => $seed,
         'modo' => 'pokemon',
         'geracoes' => $geracoes,
-        'geracao_contexto' => $geracao_contexto
+        'geracao_contexto' => $geracao_contexto,
+        'dicas' => $dicas
       ]);
       exit;
     }
@@ -311,9 +331,10 @@ if ($api == 'pokedle-api') {
       }
       $pk = $post_params['palpite'];
       $pokemon = obter_dados($pk, $_SESSION['geracao_contexto']);
+      //echo json_encode(['erro' => 'a'.var_dump($pokemon)]);exit;
       if (empty($pokemon->id)) {
         http_response_code(400);
-        echo json_encode(['erro' => 'Pokémon não encontrado']);
+        echo json_encode(['erro' => 'Pokémon não encontrado.']);
         exit;
       }
       //if (array_search($pokemon->nome, $_SESSION['nomes_dos_pokemons_das_geracoes_selecionadas']) === false) {
