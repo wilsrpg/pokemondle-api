@@ -107,7 +107,17 @@ function obter_dados($nome_estilizado_do_pokemon, $geracao) {
   if (empty($dados_da_ability) || empty($dados_da_ability->names[7]->name))
     return ['erro' => 'Erro ao obter ability.'];
   $ability = $dados_da_ability->names[7]->name;
-  //past_ability??
+  if (!empty($pokemon_secreto->past_abilities)) {
+    for ($i=0; $i < count($pokemon_secreto->past_abilities); $i++) {
+      $pa = $pokemon_secreto->past_abilities[$i];
+      $url = $pa->generation->url;
+      $geracao_pa = (int) str_replace('/','', substr($url, strrpos(substr($url, 0, strlen($url)-1),'/')));
+      if ($geracao < $geracao_pa) {
+        $ability = $pa->abilities[0]->ability->name;
+        break;
+      }
+    }
+  }
 
   return (object) [
     'id'=>$pokemon_secreto->id*1,
@@ -237,6 +247,22 @@ if ($api == 'pokedle-api') {
       }
 
       $seed = (int) date("Ymd");
+      if (isset($post_params['data'])) {
+        $data = (int) $post_params['data'];
+        $ano = floor($data/10000);
+        $mes = floor(($data-$ano*10000)/100);
+        $dia = $data-$ano*10000-$mes*100;
+        //http_response_code(400);
+        //echo json_encode(['erro' => $ano.'-'.$mes.'-'.$dia]);
+        //exit;
+        if (!checkdate($mes, $dia, $ano)) {
+          http_response_code(400);
+          echo json_encode(['erro' => 'Data inválida: "'.$post_params['data'].'".']);
+          exit;
+        }
+        $seed = $data;
+      }
+      //var_dump($seed);exit;
       srand($seed);
       $total_de_pokemons_das_geracoes = count($pokemons_da_geracao);
       $indice_do_pokemon_secreto = (rand() % $total_de_pokemons_das_geracoes);
