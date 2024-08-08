@@ -142,7 +142,7 @@ function obter_dados($nome_estilizado_da_tecnica, $geracao) {
     $alvo = 'Oponente/Si mesmo';
 
   if (!empty($tecnica_secreta->past_values)) {
-    for ($i=0; $i < count($tecnica_secreta->past_values); $i++) { 
+    for ($i=0; $i < count($tecnica_secreta->past_values); $i++) {
       $pv = $tecnica_secreta->past_values[$i];
       $geracao_pv = $geracao_dos_jogos[$pv->version_group->name];
       if ($geracao < $geracao_pv) {
@@ -315,6 +315,22 @@ if ($api == 'pokedle-moves-api') {
       }
 
       $seed = (int) date("Ymd");
+      if (isset($post_params['data'])) {
+        $data = (int) $post_params['data'];
+        $ano = floor($data/10000);
+        $mes = floor(($data-$ano*10000)/100);
+        $dia = $data-$ano*10000-$mes*100;
+        //http_response_code(400);
+        //echo json_encode(['erro' => $ano.'-'.$mes.'-'.$dia]);
+        //exit;
+        if (!checkdate($mes, $dia, $ano)) {
+          http_response_code(400);
+          echo json_encode(['erro' => 'Data inválida: "'.$post_params['data'].'".']);
+          exit;
+        }
+        $seed = $data;
+      }
+      //var_dump($seed);exit;
       srand($seed);
       $total_de_tecnicas_das_geracoes = count($tecnicas_das_geracoes);
       $indice_da_tecnica_secreta = (rand() % $total_de_tecnicas_das_geracoes);
@@ -323,8 +339,8 @@ if ($api == 'pokedle-moves-api') {
       $tecscrt = obter_dados($nomes_estilizados_de_todas_as_tecnicas[$id_da_tecnica_secreta], $geracao);
       //$uuid = uuid_create(UUID_TYPE_TIME);
       //$_SESSION['id'] = $uuid;
-      
-      $dicas = [$tecscrt->descricao, $tecscrt->alvo];
+
+      $dicas = [$tecscrt->alvo, $tecscrt->descricao];
 
       $_SESSION['seed'] = $seed;
       $_SESSION['geracoes'] = $geracoes;
@@ -438,6 +454,8 @@ if ($api == 'pokedle-moves-api') {
         'pp_r'=>$tecnica->pp === $tecscrt->pp ? 1 : ($tecnica->pp > $tecscrt->pp ? 2 : 0),
         'categoria'=>$tecnica->categoria,
         'categoria_r'=>$tecnica->categoria === $tecscrt->categoria ? 1 : 0,
+        'alvo'=>$tecnica->alvo,
+        'alvo_r'=>$tecnica->alvo === $tecscrt->alvo ? 1 : 0,
         'afeta_stat'=>$tecnica->afeta_stat,
         'afeta_stat_r'=>$tecnica->afeta_stat === $tecscrt->afeta_stat ? 1 : 0,
         'causa_ailment'=>$tecnica->causa_ailment,
