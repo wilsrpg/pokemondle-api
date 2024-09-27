@@ -50,9 +50,9 @@ if (empty($api) || empty($versao) || empty($acao)) {
   exit;
 }
 
-if ($api == 'pokedle-api')
-  include_once 'pokedle-api.php';
-else if ($api == 'pokedle-moves-api')
-  include_once 'pokedle-moves-api.php';
+if ($api == 'pokemondle-api')
+  include_once 'pokemondle-api.php';
+else if ($api == 'pokemondle-moves-api')
+  include_once 'pokemondle-moves-api.php';
 else
   echo json_encode(['erro' => 'API não encontrada: "'.$api.'"']);

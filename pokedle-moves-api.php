@@ -519,7 +519,7 @@ $ultimo_id = end($ids_dos_pokemons_das_geracoes);
   ];
 }
 
-if ($api == 'pokedle-moves-api') {
+if ($api == 'pokemondle-moves-api') {
   if ($versao == 'v1') {
       if ($metodo == 'POST' && $acao == 'jogo') {
       $postp_geracoes = '';

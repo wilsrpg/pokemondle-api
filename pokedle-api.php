@@ -136,7 +136,7 @@ function obter_dados($nome_estilizado_do_pokemon, $geracao) {
   ];
 }
 
-if ($api == 'pokedle-api') {
+if ($api == 'pokemondle-api') {
   if ($versao == 'v1') {
       if ($metodo == 'POST' && $acao == 'jogo') {
       $postp_geracoes = '';

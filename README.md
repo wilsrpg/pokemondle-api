@@ -1,4 +1,4 @@
-### URL base: [https://wilsrpg.x10.mx/pokedle-api/v1](https://wilsrpg.x10.mx/pokedle-api/v1)
+### URL base: [https://wilsrpg.x10.mx/pokemondle-api/v1](https://wilsrpg.x10.mx/pokemondle-api/v1)
 Todas as requisições podem ser feitas em formato JSON ou formulário HTML.
 
 ### POST /jogo
