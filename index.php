@@ -24,7 +24,7 @@ if ($metodo == 'POST' && empty($_POST) && empty(file_get_contents('php://input')
 $caminho = '';
 if(empty($_GET['caminho'])) {
   http_response_code(404);
-  echo json_encode(['erro' => 'Rota não encontrada. Verifique se o endereço corresponde ao padrão domínio/api/versão/rota.']);
+  echo json_encode(['erro' => 'Caminho vazio. Verifique se o endereço corresponde ao padrão domínio/api/versão/rota.']);
   exit;
 }
 
@@ -37,6 +37,7 @@ if (empty($_POST))
 else
   $post_params = $_POST;
 
+$api = $versao = $acao = '';
 if (isset($subdir[0]))
   $api = $subdir[0];
 if (isset($subdir[1]))
@@ -46,7 +47,12 @@ if (isset($subdir[2]))
 
 if (empty($api) || empty($versao) || empty($acao)) {
   http_response_code(404);
-  echo json_encode(['erro' => 'Rota não encontrada. Verifique se o endereço corresponde ao padrão domínio/api/versão/rota.']);
+  echo json_encode(['erro' => 'Rota não encontrada. Verifique se o endereço corresponde ao padrão '
+    .'domínio/api/versão/ação. Caminho recebido: '
+    .'api="'.($api ? $api : '').'", '
+    .'versão="'.($versao ? $versao : '').'", '
+    .'ação="'.($acao ? $acao : '').'".'
+  ]);
   exit;
 }
 
