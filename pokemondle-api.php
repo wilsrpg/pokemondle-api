@@ -94,7 +94,7 @@ function obter_dados($nome_estilizado_do_pokemon, $geracao) {
   $peso = $pokemon_secreto->weight;
   $url_do_sprite = $pokemon_secreto->sprites->front_default;
   //var_dump($pokemon_secreto->id);exit;
-  $cry;
+  $cry = '';
   if ($geracao >= 6)
     $cry = $pokemon_secreto->cries->latest;
   else
