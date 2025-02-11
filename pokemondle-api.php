@@ -247,8 +247,8 @@ if ($api == 'pokemondle-api') {
       }
 
       $seed = (int) date("Ymd");
-      if (isset($post_params['data'])) {
-        $data = (int) $post_params['data'];
+      if (!empty($post_params['data'])) {
+        $data = (int) str_replace('-', '', $post_params['data']);
         $ano = floor($data/10000);
         $mes = floor(($data-$ano*10000)/100);
         $dia = $data-$ano*10000-$mes*100;
